@@ -33,6 +33,18 @@ export default defineConfig({
     },
   },
 
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+        modifyVars: {
+          "primary-color": "#1890ff",
+          hack: `true; @import '@less/config.less'`,
+        },
+      },
+    },
+  },
+
   plugins: [
     vue(),
 
