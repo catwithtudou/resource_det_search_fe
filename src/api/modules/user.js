@@ -1,16 +1,16 @@
 ﻿import axios from "@api/axios.js";
 
-export function testGet(query) {
+export function userLogin(data) {
   return axios({
-    url: "/testGet",
-    method: "get",
-    params: query,
+    url: "/user/login",
+    method: "post",
+    data: data,
   });
 }
 
-export function testPost(data) {
+export function userRegister(data) {
   return axios({
-    url: "/testPost",
+    url: "/user",
     method: "post",
     data: data,
   });
