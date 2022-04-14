@@ -30,6 +30,7 @@ export default defineConfig({
       "@cp": resolve("src/components"),
       "@views": resolve("src/views"),
       "@store": resolve("src/store"),
+      "@api": resolve("src/api"),
     },
   },
 

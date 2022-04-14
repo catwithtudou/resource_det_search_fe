@@ -9,17 +9,18 @@
         <div class="home-login" v-if="isAppearForm">
             <div class="home-login-form">
                 <el-form :model="form" label-width="auto" label-position="left">
-                    <el-form-item label="Username" >
+                    <el-form-item label="Username">
                         <el-input v-model="form.email" placeholder="邮箱地址" />
                     </el-form-item>
                     <el-form-item label="Password">
                         <el-input v-model="form.pswd" placeholder="密码" />
                     </el-form-item>
-                    <el-button size="default" class="home-login-form-btn" :loading="isLoginLoading" >Log In
+                    <el-button size="default" class="home-login-form-btn" :loading="isLoginLoading" @click="login">Log
+                        In
                     </el-button>
-                    <el-button type="text"   class="home-login-form-text">Forget Password?</el-button>
+                    <el-button type="text" class="home-login-form-text" @click="forgetPswd">Forget Password?</el-button>
                     <el-divider />
-                    <el-button size="default" class="home-login-form-btn">Sign Up
+                    <el-button size="default" class="home-login-form-btn" @click="signUp">Sign Up
                     </el-button>
                 </el-form>
 
@@ -31,18 +32,34 @@
 
 <script setup>
 import { ref } from "vue"
+import user from "@api/index.js"
 
-let isAppearForm = ref(true)
+let isAppearForm = ref(false) //TODO:方便测试暂时为true
 let isLoginLoading = ref(false)
+
 
 let appearForm = () => {
     isAppearForm.value = true
+    user.testGet({ "test": "test" }).then(res => {
+        console.log("testGet")
+        console.log(res)
+    }, err => {
+        console.log(err)
+    })
+    user.testPost({ "test": "test" }).then(res => {
+        console.log("testPost")
+        console.log(res)
+    }, err => {
+        console.log(err)
+    })
 }
 
 let form = ref({
     "email": "",
     "pwsd": ""
 })
+
+
 
 
 </script>
