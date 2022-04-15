@@ -39,14 +39,14 @@
           </el-form-item>
           <el-form-item label="Role" prop="role">
             <el-select v-model="form.role" placeholder="角色">
-              <el-option label="Student" value="student" />
-              <el-option label="Teacher" value="teacher" />
+              <el-option label="Student" value="学生" />
+              <el-option label="Teacher" value="教师" />
             </el-select>
           </el-form-item>
           <el-form-item label="Sex" prop="sex">
             <el-select v-model="form.sex" placeholder="性别">
-              <el-option label="Man" value="man" />
-              <el-option label="Woman" value="woman" />
+              <el-option label="Man" value="男" />
+              <el-option label="Woman" value="女" />
             </el-select>
           </el-form-item>
           <el-button

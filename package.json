@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^1.1.4",
     "@vitejs/plugin-vue": "^2.3.0",
     "axios": "^0.26.1",
     "element-plus": "^2.1.9",
@@ -24,16 +25,17 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@element-plus/icons-vue": "^1.1.4",
     "@vitejs/plugin-vue": "^2.3.0",
     "axios": "^0.26.1",
     "element-plus": "^2.1.9",
+    "less": "^4.1.2",
     "localforage": "^1.10.0",
     "unplugin-vue-components": "^0.19.2",
     "vite": "^2.9.0",
     "vite-plugin-banner": "^0.2.0",
     "vue": "^3.2.25",
     "vue-router": "^4.0.13",
-    "vuex": "^4.0.2",
-    "less": "^4.1.2"
+    "vuex": "^4.0.2"
   }
 }
