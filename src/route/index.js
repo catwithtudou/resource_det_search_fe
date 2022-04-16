@@ -6,6 +6,8 @@ import personalResource from "@views/personalResource.vue";
 import personalTags from "@views/personalTags.vue";
 import personalCategories from "@views/personalCategories.vue";
 
+import store from "@/store";
+
 const routes = [
   {
     path: "/",
@@ -43,7 +45,21 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
+  if (to.path === "/" || to.path === "/register") {
+    return true;
+  }
+
+  if (store.getters["home/isUserLogin"]) {
+    return true;
+  }
+
+  let res = await store.dispatch("home/localUserInfo");
+  if (!res) {
+    router.push("/");
+    return false;
+  }
+
   return true;
 });
 

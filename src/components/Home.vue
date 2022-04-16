@@ -52,13 +52,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import api from "@api/index.js";
 import { ElMessage } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
 
 let router = useRouter();
 let route = useRoute();
+let store = useStore();
 
 let isAppearForm = ref(false);
 let isLoginLoading = ref(false);
@@ -89,29 +91,38 @@ function appearForm() {
 }
 
 async function userLogin(ruleFormRef) {
-  await ruleFormRef.validate((valid, fields) => {
-    if (!valid) {
-      ElMessage.error("请正确填写信息");
-      return;
-    }
-    isLoginLoading.value = true;
-    api.user
-      .userLogin(form.value)
-      .then((res) => {
+  await ruleFormRef
+    .validate((valid, fields) => {
+      if (!valid) {
+        ElMessage.error("请正确填写信息");
+        return;
+      }
+      isLoginLoading.value = true;
+      api.user.userLogin(form.value).then((res) => {
         isLoginLoading.value = false;
         if (res.data.code != 0) {
           ElMessage.error("登录失败，请检查账号密码");
           return;
         }
-        ElMessage.success("登录成功，欢迎进入~");
-        //TODO: 跳转到主页
-        //TODO: 保存用户数据（vuex+localstorage）
-      })
-      .catch((err) => {
-        isLoginLoading.value = false;
-        ElMessage.error("网络错误，请检查网络连接");
+        store
+          .dispatch("home/userLogin", {
+            token: res.data.data.token,
+            name: res.data.data.name,
+          })
+          .then((res) => {
+            ElMessage.success("登录成功，欢迎进入~");
+            router.push("/personal");
+          })
+          .catch((err) => {
+            ElMessage.error("网络错误，请检查网络连接");
+            isLoginLoading.value = false;
+          });
       });
-  });
+    })
+    .catch((err) => {
+      isLoginLoading.value = false;
+      ElMessage.error("网络错误，请检查网络连接");
+    });
 }
 
 function forgetPswd() {}

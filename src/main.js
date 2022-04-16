@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "@/App.vue";
-import route from "@/route";
 import store from "@/store";
+import route from "@/route";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 
@@ -9,7 +9,7 @@ import "element-plus/dist/index.css";
 import "@less/global.less";
 
 createApp(App)
-  .use(route)
   .use(store)
+  .use(route)
   .use(ElementPlus)
   .mount("#app");
