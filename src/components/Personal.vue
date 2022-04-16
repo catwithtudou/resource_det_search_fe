@@ -39,10 +39,21 @@
         <el-aside class="personal-base-avater">
           <el-image :src="userInfo.avatarUrl" fit="fill" lazy />
           <el-divider />
-          <el-button type="text" :icon="Edit" @click="editIntro()"
-            >编辑个人信息</el-button
-          >
-          <el-button type="text" :icon="Upload" @click="editAvatar()">上传头像</el-button>
+          <div class="personal-base-avater-info">
+            <el-button type="text" :icon="Edit" @click="editIntro()"
+              >编辑个人信息</el-button
+            >
+            <el-upload
+              :action="uploadAvatar.action"
+              :name="uploadAvatar.name"
+              :headers="uploadAvatar.header"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <el-button type="text" :icon="Upload">上传头像</el-button>
+            </el-upload>
+          </div>
         </el-aside>
         <el-main class="personal-base-info">
           <el-row justify="start">
@@ -118,6 +129,7 @@ let store = useStore();
 let router = useRouter();
 
 let topName = computed(() => store.state.home.name);
+let userToken = computed(() => store.state.home.token);
 let userInfo = ref({
   avatarUrl: "",
   name: "",
@@ -128,6 +140,13 @@ let userInfo = ref({
   intro: "",
 });
 let userInfoLoading = ref(false);
+let uploadAvatar = ref({
+  action: "http://localhost:3000/api/user/avatar",
+  name: "avatar",
+  header: {
+    Authorization: "Bearer " + userToken.value,
+  },
+});
 
 onMounted(() => {
   userInfoLoading.value = true;
@@ -208,7 +227,25 @@ function editIntro() {
     .catch(() => {});
 }
 
-function editAvatar() {}
+function handleAvatarSuccess(response, uploadFile, file) {
+  if (response.code !== 0) {
+    ElMessage.error("上传头像失败，请稍后重试~");
+    return;
+  }
+  userInfo.value.avatarUrl = response.data.avatar;
+  ElMessage.success("上传头像成功~");
+}
+
+function beforeAvatarUpload(rawFile) {
+  if (rawFile.type !== "image/jpeg" && rawFile.type !== "image/png") {
+    ElMessage.error("头像格式异常，请重新上传~");
+    return false;
+  } else if (rawFile.size / 1024 / 1024 > 2) {
+    ElMessage.error("头像大小不能超过2MB，请重新上传~");
+    return false;
+  }
+  return true;
+}
 </script>
 
 <style lang="less" scoped>
@@ -255,6 +292,12 @@ function editAvatar() {}
       .el-image {
         border-radius: 100%;
         width: 10vw;
+      }
+
+      .personal-base-avater-info {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
       }
     }
 
