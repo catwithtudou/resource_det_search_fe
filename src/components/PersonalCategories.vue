@@ -2,7 +2,12 @@
   <div class="personalCategories">
     <h1 class="personalCategories-header">分类</h1>
     <el-divider />
-    <el-row :gutter="5" class="personalCategories-tags-row" justify="start">
+    <el-row
+      :gutter="5"
+      class="personalCategories-tags-row"
+      justify="start"
+      v-loading="categoryLoading"
+    >
       <el-col
         class="personalCategories-tags-col"
         v-for="(category, i) in categories"
@@ -32,7 +37,7 @@
           class="personalCategories-resources-col"
           v-for="(rs, i) in resources"
           :key="i"
-          :span="8"
+          :span="12"
         >
           <el-card
             class="personalCategories-resources-col-card"
@@ -42,23 +47,11 @@
             <div class="personalCategories-resources-col-title">
               <p><span>标题：</span>{{ rs.title }}</p>
             </div>
-            <div class="personalCategories-resources-col-username">
-              <p><span>标题：</span>{{ rs.username }}</p>
-            </div>
             <div class="personalCategories-resources-col-fileType">
               <p><span>文件类型：</span>{{ rs.fileType }}</p>
             </div>
             <div class="personalCategories-resources-col-intro">
               <p><span>文件简介：</span>{{ rs.intro }}</p>
-            </div>
-            <div class="personalCategories-resources-col-part">
-              <p><span>类型：</span>{{ rs.part }}</p>
-            </div>
-            <div class="personalCategories-resources-col-categories">
-              <p><span>分类：</span>{{ rs.categories }}</p>
-            </div>
-            <div class="personalCategories-resources-col-tags">
-              <p><span>标签：</span>{{ rs.tags }}</p>
             </div>
             <div class="personalCategories-resources-col-nums">
               <p>
@@ -77,31 +70,35 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
+import api from "@api/index.js";
+import { ElMessage, ElMessageBox } from "element-plus";
 
-let categories = ref([
-  {
-    id: 1,
-    name: "math",
-  },
-  {
-    id: 2,
-    name: "english",
-  },
-  {
-    id: 3,
-    name: "chinese",
-  },
-]);
+let categories = ref([]);
+let categoryLoading = ref(false);
 
-let checkCategories = ref({
-  id: "",
-  name: "",
+onMounted(() => {
+  categoryLoading.value = true;
+  api.dimension
+    .getUserDimension({})
+    .then((res) => {
+      categoryLoading.value = false;
+      if (res.data.code != 0) {
+        ElMessage.error("服务器异常，请稍后重试~");
+        return;
+      }
+      categories.value = res.data.data.category;
+    })
+    .catch((err) => {
+      categoryLoading.value = false;
+      ElMessage.error("网络错误，请检查网络连接");
+    });
 });
 
+let checkCategories = ref({});
 let isLoading = ref(false);
 let isChecked = ref(false);
-let resources = ref();
+let resources = ref([]);
 let categoryResourceLoading = ref(false);
 
 function categoryCheck(category) {
@@ -113,79 +110,37 @@ function categoryCheck(category) {
     id: category.id,
     name: category.name,
   };
-
+  isLoading.value = true;
   categoryResourceLoading.value = true;
-  setTimeout(() => {
-    categoryResourceLoading.value = false;
-    resources.value = [
-      {
-        title: "math",
-        username: "郑煜",
-        fileType: "docx",
-        intro:
-          "mathmathmathmathmathmathmathmathmathmathmathmatmathmathmathmathmathmathmathmathmathmathmathmathh",
-        part: "课程课件",
-        categories: ["math"],
-        tags: ["math", "school"],
-        downloadNum: 100,
-        scanNums: 200,
-        likeNum: 100,
-        uploadTime: "2022年4月15日11:11:32",
-      },
-      {
-        title: "math",
-        username: "郑煜",
-        fileType: "docx",
-        intro: "math",
-        part: "课程课件",
-        categories: ["math"],
-        tags: ["math", "school"],
-        downloadNum: 100,
-        scanNums: 200,
-        likeNum: 100,
-        uploadTime: "2022年4月15日11:11:32",
-      },
-      {
-        title: "math",
-        username: "郑煜",
-        fileType: "docx",
-        intro: "math",
-        part: "课程课件",
-        categories: ["math"],
-        tags: ["math", "school"],
-        downloadNum: 100,
-        scanNums: 200,
-        likeNum: 100,
-        uploadTime: "2022年4月15日11:11:32",
-      },
-      {
-        title: "math",
-        username: "郑煜",
-        fileType: "docx",
-        intro: "math",
-        part: "课程课件",
-        categories: ["math"],
-        tags: ["math", "school"],
-        downloadNum: 100,
-        scanNums: 200,
-        likeNum: 100,
-        uploadTime: "2022年4月15日11:11:32",
-      },
-      {
-        title: "math",
-        username: "郑煜",
-        fileType: "docx",
-        intro: "math",
-        part: "课程课件",
-        categories: ["math"],
-        tags: ["math", "school"],
-        downloadNum: 100,
-        scanNums: 200,
-        likeNum: 100,
-        uploadTime: "2022年4月15日11:11:32",
-      },
-    ];
-  }, 2000);
+  api.document
+    .getUserDmResource({
+      did: category.id,
+    })
+    .then((res) => {
+      isLoading.value = false;
+      categoryResourceLoading.value = false;
+      if (res.data.code != 0) {
+        ElMessage.error("服务器异常，请稍后重试~");
+        return;
+      }
+      resources.value = []
+      for (let i = 0; i < res.data.data.docs.length; i++) {
+        resources.value[i] = {
+          title: res.data.data.docs[i].title,
+          fileType: res.data.data.docs[i].type,
+          intro: res.data.data.docs[i].intro,
+          downloadNum: res.data.data.docs[i].download_num,
+          scanNums: res.data.data.docs[i].scan_num,
+          likeNum: res.data.data.docs[i].like_num,
+          uploadTime: res.data.data.docs[i].upload_time,
+        };
+      }
+    })
+    .catch((err) => {
+      isLoading.value = false;
+      categoryResourceLoading.value = false;
+      ElMessage.error("网络错误，请检查网络连接");
+    });
 }
 
 function clickCard() {

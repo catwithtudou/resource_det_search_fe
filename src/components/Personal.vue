@@ -179,17 +179,17 @@ onMounted(() => {
 });
 
 function handleOpen(key, keyPath) {
-  console.log("open:" + key);
+  // console.log("open:" + key);
 }
 function handleClose(key, keyPath) {
-  console.log("close:" + key);
+  // console.log("close:" + key);
 }
 
 function handleSelect(index, indexPath, item, routeItem) {
-  console.log("select:" + index);
-  console.log("select:" + indexPath);
-  console.log("select:" + item);
-  console.log("select:" + routeItem);
+  // console.log("select:" + index);
+  // console.log("select:" + indexPath);
+  // console.log("select:" + item);
+  // console.log("select:" + routeItem);
 }
 
 function topNameSkip() {

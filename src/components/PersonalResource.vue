@@ -2,19 +2,21 @@
   <div class="personalResource">
     <h1 class="personalResource-header">已上传资源</h1>
     <el-divider />
-    <el-row :gutter="20" class="personalResource-row" justify="start">
+    <el-row
+      :gutter="20"
+      class="personalResource-row"
+      justify="start"
+      v-loading="resourceLoading"
+    >
       <el-col
         class="personalResource-col"
         v-for="(rs, i) in resources"
         :key="i"
-        :span="8"
+        :span="12"
       >
         <el-card class="personalResource-col-card" shadow="hover" @click="clickCard()">
           <div class="personalResource-col-title">
             <p><span>标题：</span>{{ rs.title }}</p>
-          </div>
-          <div class="personalResource-col-username">
-            <p><span>标题：</span>{{ rs.username }}</p>
           </div>
           <div class="personalResource-col-fileType">
             <p><span>文件类型：</span>{{ rs.fileType }}</p>
@@ -23,7 +25,7 @@
             <p><span>文件简介：</span>{{ rs.intro }}</p>
           </div>
           <div class="personalResource-col-part">
-            <p><span>类型：</span>{{ rs.part }}</p>
+            <p><span>类型：</span>{{ rs.part.name }}</p>
           </div>
           <div class="personalResource-col-categories">
             <p><span>分类：</span>{{ rs.categories }}</p>
@@ -47,80 +49,58 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import api from "@api/index.js";
+import { ElMessage, ElMessageBox } from "element-plus";
 
-let resources = ref([
-  {
-    title: "math",
-    username: "郑煜",
-    fileType: "docx",
-    intro:
-      "mathmathmathmathmathmathmathmathmathmathmathmatmathmathmathmathmathmathmathmathmathmathmathmathh",
-    part: "课程课件",
-    categories: ["math"],
-    tags: ["math", "school"],
-    downloadNum: 100,
-    scanNums: 200,
-    likeNum: 100,
-    uploadTime: "2022年4月15日11:11:32",
-  },
-  {
-    title: "math",
-    username: "郑煜",
-    fileType: "docx",
-    intro: "math",
-    part: "课程课件",
-    categories: ["math"],
-    tags: ["math", "school"],
-    downloadNum: 100,
-    scanNums: 200,
-    likeNum: 100,
-    uploadTime: "2022年4月15日11:11:32",
-  },
-  {
-    title: "math",
-    username: "郑煜",
-    fileType: "docx",
-    intro: "math",
-    part: "课程课件",
-    categories: ["math"],
-    tags: ["math", "school"],
-    downloadNum: 100,
-    scanNums: 200,
-    likeNum: 100,
-    uploadTime: "2022年4月15日11:11:32",
-  },
-  {
-    title: "math",
-    username: "郑煜",
-    fileType: "docx",
-    intro: "math",
-    part: "课程课件",
-    categories: ["math"],
-    tags: ["math", "school"],
-    downloadNum: 100,
-    scanNums: 200,
-    likeNum: 100,
-    uploadTime: "2022年4月15日11:11:32",
-  },
-  {
-    title: "math",
-    username: "郑煜",
-    fileType: "docx",
-    intro: "math",
-    part: "课程课件",
-    categories: ["math"],
-    tags: ["math", "school"],
-    downloadNum: 100,
-    scanNums: 200,
-    likeNum: 100,
-    uploadTime: "2022年4月15日11:11:32",
-  },
-]);
+let resourceLoading = ref(false);
+let resources = ref([]);
+
+onMounted(() => {
+  resourceLoading.value = true;
+  api.document
+    .getUserAllResource({})
+    .then((res) => {
+      resourceLoading.value = false;
+      if (res.data.code != 0) {
+        ElMessage.error("服务器异常，请稍后重试~");
+        return;
+      }
+      for (let i = 0; i < res.data.data.length; i++) {
+        resources.value[i] = {
+          title: res.data.data[i].title,
+          fileType: res.data.data[i].type,
+          intro: res.data.data[i].intro,
+          part: res.data.data[i].part,
+          downloadNum: res.data.data[i].download_num,
+          scanNums: res.data.data[i].scan_num,
+          likeNum: res.data.data[i].like_num,
+          uploadTime: res.data.data[i].upload_time,
+        };
+        let handleDm = (dms) => {
+          if (dms.length == 0) {
+            return "暂无";
+          }
+          let dm = [];
+          for (let i = 0; i < dms.length; i++) {
+            dm[i] = dms[i].name;
+          }
+          return dm.join("，");
+        };
+        resources.value[i].categories = handleDm(res.data.data[i].categories);
+        resources.value[i].tags = handleDm(res.data.data[i].tags);
+      }
+    })
+    .catch((err) => {
+      resourceLoading.value = false;
+      ElMessage.error("网络错误，请检查网络连接");
+    });
+});
 
 function clickCard() {
   console.log("clickCard");
 }
+
 </script>
 <style lang="less" scoped>
 .personalResource {
