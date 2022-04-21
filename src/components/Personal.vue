@@ -191,8 +191,12 @@ onMounted(() => {
         return;
       }
       let resData = res.data.data;
-      if (resData.intro === "") {
+      if (!resData.intro) {
         resData.intro = "这个人很懒，什么都没有留下~";
+      }
+      if (!resData.avatar) {
+        resData.avatar =
+          "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
       }
       userInfo.value = {
         avatarUrl: resData.avatar,
@@ -332,8 +336,6 @@ function beforeAvatarUpload(rawFile) {
   }
 
   .personal-base-info {
-    font-size: 10px;
-
     span {
       font-weight: bold;
       color: #337ecc;

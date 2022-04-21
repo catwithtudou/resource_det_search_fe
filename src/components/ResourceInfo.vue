@@ -162,7 +162,9 @@ function topNameSkip() {
 }
 
 function uploadResource() {
-  //TODO:跳转至上传页面
+  router.push({
+    name: "uploadResource",
+  });
 }
 
 // aside 部分
@@ -275,7 +277,9 @@ onMounted(() => {
             return;
           }
           doc.value.username = userRes.data.data.name;
-          user.value.avatar = userRes.data.data.avatar;
+          if (userRes.data.data.avatar) {
+            user.value.avatar = userRes.data.data.avatar;
+          }
           user.value.username = userRes.data.data.name;
           api.dimension
             .getUserDimension({ uid: res.data.data.uid })

@@ -51,7 +51,7 @@ function topNameSkip() {
 <style lang="less" scoped>
 .main-header {
   padding: 0;
-  height: 8vh;
+  height: 100%;
   width: 100%;
   background-color: #d9ecff;
   .main-header-rows {

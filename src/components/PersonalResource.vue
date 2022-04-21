@@ -66,8 +66,13 @@ onMounted(() => {
     .getUserAllResource({})
     .then((res) => {
       resourceLoading.value = false;
+      resources.value = [];
       if (res.data.code != 0) {
         ElMessage.error("服务器异常，请稍后重试~");
+        return;
+      }
+      if (!res.data.data) {
+        ElMessage.info("暂无资源~");
         return;
       }
       for (let i = 0; i < res.data.data.length; i++) {
@@ -91,7 +96,7 @@ onMounted(() => {
           for (let i = 0; i < dms.length; i++) {
             dm[i] = dms[i].name;
           }
-          return dm.join("，");
+          return "[" + dm.join("，") + "]";
         };
         resources.value[i].categories = handleDm(res.data.data[i].categories);
         resources.value[i].tags = handleDm(res.data.data[i].tags);

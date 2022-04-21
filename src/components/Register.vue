@@ -117,11 +117,11 @@ async function userRegister(ruleFormRef) {
       return;
     }
 
-    isRegisterLoading = true;
+    isRegisterLoading.value = true;
     api.user
       .userRegister(form.value)
       .then((res) => {
-        isRegisterLoading = false;
+        isRegisterLoading.value = false;
         if (res.data.code != 0) {
           if (res.data.code === 11004) {
             ElMessage.error("邮箱已注册");

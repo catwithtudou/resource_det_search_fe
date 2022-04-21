@@ -86,6 +86,10 @@ onMounted(() => {
         ElMessage.error("服务器异常，请稍后重试~");
         return;
       }
+      if (!res.data.data || !res.data.data.tag || res.data.data.tag.length == 0) {
+        ElMessage.info("暂无标签~");
+        return;
+      }
       tags.value = res.data.data.tag;
     })
     .catch((err) => {
@@ -120,11 +124,15 @@ function tagCheck(tag) {
     .then((res) => {
       isLoading.value = false;
       tagResourceLoading.value = false;
+        resources.value = [];
       if (res.data.code != 0) {
         ElMessage.error("服务器异常，请稍后重试~");
         return;
       }
-      resources.value = [];
+      if (!res.data.data || !res.data.data.docs || res.data.data.docs.length === 0) {
+        ElMessage.info("暂无资源~");
+        return;
+      }
       for (let i = 0; i < res.data.data.docs.length; i++) {
         resources.value[i] = {
           title: res.data.data.docs[i].title,

@@ -101,9 +101,19 @@ onMounted(() => {
         ElMessage.error("服务器异常，请稍后重试~");
         return;
       }
+      if (
+        !res.data.data ||
+        !res.data.data.category ||
+        res.data.data.category.length == 0
+      ) {
+        ElMessage.info("暂无分类~");
+        return;
+      }
+
       categories.value = res.data.data.category;
     })
     .catch((err) => {
+      console.log(err);
       categoryLoading.value = false;
       ElMessage.error("网络错误，请检查网络连接");
     });
@@ -134,11 +144,16 @@ function categoryCheck(category) {
     .then((res) => {
       isLoading.value = false;
       categoryResourceLoading.value = false;
+      resources.value = [];
+
       if (res.data.code != 0) {
         ElMessage.error("服务器异常，请稍后重试~");
         return;
       }
-      resources.value = [];
+      if (!res.data.data || !res.data.data.docs || res.data.data.docs.length === 0) {
+        ElMessage.info("暂无资源~");
+        return;
+      }
       for (let i = 0; i < res.data.data.docs.length; i++) {
         resources.value[i] = {
           title: res.data.data.docs[i].title,

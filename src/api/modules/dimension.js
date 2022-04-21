@@ -15,3 +15,10 @@ export function addUserDimension(data) {
     data: data,
   });
 }
+
+export function getPartDimension() {
+  return axios({
+    url: "/dimension/part",
+    method: "get",
+  });
+}
