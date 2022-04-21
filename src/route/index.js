@@ -6,6 +6,7 @@ import personalResource from "@views/personalResource.vue";
 import personalTags from "@views/personalTags.vue";
 import personalCategories from "@views/personalCategories.vue";
 import resourceInfo from "@views/resourceInfo.vue";
+import uploadResource from "@views/uploadResource.vue";
 
 import store from "@/store";
 
@@ -43,6 +44,11 @@ const routes = [
     path: "/resource/info/:id",
     name: "resourceInfo",
     component: resourceInfo,
+  },
+  {
+    path:"/resource/upload",
+    name:"uploadResource",
+    component: uploadResource,
   }
 ];
 

@@ -13,6 +13,11 @@
           #{{ tag.name }}
         </el-button>
       </el-col>
+      <el-col class="personalTags-tags-col" :span="4">
+        <el-button type="primary" :icon="Plus" @click="addTag()" :loading="addTagLoading">
+          添加标签#
+        </el-button>
+      </el-col>
     </el-row>
     <div class="personalTags-resources" v-if="isChecked">
       <h2 class="personalTags-resources-header">{{ checkTags.name }}</h2>
@@ -63,6 +68,7 @@
 import { ref, watch, onMounted } from "vue";
 import api from "@api/index.js";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -93,6 +99,7 @@ let isLoading = ref(false);
 let isChecked = ref(false);
 let resources = ref([]);
 let tagResourceLoading = ref(false);
+let addTagLoading = ref(false);
 
 function tagCheck(tag) {
   if (!isChecked.value) {
@@ -135,6 +142,38 @@ function tagCheck(tag) {
       isLoading.value = false;
       tagResourceLoading.value = false;
       ElMessage.error("网络错误，请检查网络连接");
+    });
+}
+
+function addTag() {
+  ElMessageBox.prompt("请输入标签名称", "添加标签", {
+    inputPattern: /^[a-zA-Z0-9\u4e00-\u9fa5]{1,10}$/,
+    inputErrorMessage: "标签名称不能为空且不能超过10个字符",
+  })
+    .then((res) => {
+      if (res.value) {
+        addTagLoading.value = true;
+        api.dimension
+          .addUserDimension({
+            name: res.value,
+            type: "tag",
+          })
+          .then((res) => {
+            addTagLoading.value = false;
+            if (res.data.code != 0) {
+              ElMessage.error("服务器异常，请稍后重试~");
+              return;
+            }
+            ElMessage.success("添加成功，请刷新页面查看~");
+          })
+          .catch((err) => {
+            addTagLoading.value = false;
+            ElMessage.error("网络错误，请检查网络连接");
+          });
+      }
+    })
+    .catch((err) => {
+      ElMessage.error("添加失败");
     });
 }
 

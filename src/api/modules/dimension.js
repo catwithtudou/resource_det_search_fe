@@ -7,3 +7,11 @@ export function getUserDimension(query) {
     params: query,
   });
 }
+
+export function addUserDimension(data) {
+  return axios({
+    url: "/dimension",
+    method: "post",
+    data: data,
+  });
+}

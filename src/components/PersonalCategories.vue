@@ -12,7 +12,7 @@
         class="personalCategories-tags-col"
         v-for="(category, i) in categories"
         :key="i"
-        :span="8"
+        :span="4"
       >
         <el-button
           type="primary"
@@ -21,6 +21,16 @@
           plain
         >
           {{ category.name }}
+        </el-button>
+      </el-col>
+      <el-col class="personalCategories-tags-col" :span="4">
+        <el-button
+          type="primary"
+          :icon="Plus"
+          @click="addCategory()"
+          :loading="addCategoryLoading"
+        >
+          添加分类
         </el-button>
       </el-col>
     </el-row>
@@ -72,7 +82,8 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import api from "@api/index.js";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -103,6 +114,7 @@ let isLoading = ref(false);
 let isChecked = ref(false);
 let resources = ref([]);
 let categoryResourceLoading = ref(false);
+let addCategoryLoading = ref(false);
 
 function categoryCheck(category) {
   if (!isChecked.value) {
@@ -144,6 +156,38 @@ function categoryCheck(category) {
       isLoading.value = false;
       categoryResourceLoading.value = false;
       ElMessage.error("网络错误，请检查网络连接");
+    });
+}
+
+function addCategory() {
+  ElMessageBox.prompt("请输入分类名称", "添加分类", {
+    inputPattern: /^[a-zA-Z0-9\u4e00-\u9fa5]{1,10}$/,
+    inputErrorMessage: "分类名称不能为空且不能超过10个字符",
+  })
+    .then((res) => {
+      if (res.value) {
+        addCategoryLoading.value = true;
+        api.dimension
+          .addUserDimension({
+            name: res.value,
+            type: "category",
+          })
+          .then((res) => {
+            addCategoryLoading.value = false;
+            if (res.data.code != 0) {
+              ElMessage.error("服务器异常，请稍后重试~");
+              return;
+            }
+            ElMessage.success("添加成功，请刷新页面查看~");
+          })
+          .catch((err) => {
+            addCategoryLoading.value = false;
+            ElMessage.error("网络错误，请检查网络连接");
+          });
+      }
+    })
+    .catch((err) => {
+      ElMessage.error("添加失败");
     });
 }
 

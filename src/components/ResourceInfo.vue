@@ -4,13 +4,13 @@
       <el-header class="main-header">
         <el-row justify="center" align="middle" class="main-header-rows">
           <el-col :span="14">
-            <div class="main-header-title">
+            <div class="main-header-title" @click="backHome()">
               <h2>高校课程资源智能识别与搜索系统</h2>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="main-header-upload">
-              <el-button type="primary" size="large"
+              <el-button type="primary" size="large" @click="uploadResource()"
                 >Upload Resource
                 <el-icon class="el-icon--right">
                   <Upload />
@@ -161,6 +161,10 @@ function topNameSkip() {
   router.push("/personal");
 }
 
+function uploadResource() {
+  //TODO:跳转至上传页面
+}
+
 // aside 部分
 let asideLoading = ref(false);
 let user = ref({
@@ -172,7 +176,14 @@ let user = ref({
   },
 });
 
-function otherPersonal() {}
+function otherPersonal() {
+  // TODO:跳转他人主页(目前暂时跳转到个人主页)
+}
+
+function backHome() {
+  //TODO:跳转至主页搜索页面
+  console.log("Back home");
+}
 
 // main 部分
 let mainLoading = ref(false);
@@ -307,7 +318,7 @@ onMounted(() => {
 .resource-info {
   .main-header {
     padding: 0;
-    height: 10vh;
+    height: 100%;
     width: 100%;
     background-color: #d9ecff;
 
