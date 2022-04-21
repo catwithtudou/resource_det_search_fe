@@ -42,7 +42,7 @@
           <el-card
             class="personalCategories-resources-col-card"
             shadow="hover"
-            @click="clickCard()"
+            @click="clickCard(rs)"
           >
             <div class="personalCategories-resources-col-title">
               <p><span>标题：</span>{{ rs.title }}</p>
@@ -72,7 +72,10 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import api from "@api/index.js";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 let categories = ref([]);
 let categoryLoading = ref(false);
@@ -123,7 +126,7 @@ function categoryCheck(category) {
         ElMessage.error("服务器异常，请稍后重试~");
         return;
       }
-      resources.value = []
+      resources.value = [];
       for (let i = 0; i < res.data.data.docs.length; i++) {
         resources.value[i] = {
           title: res.data.data.docs[i].title,
@@ -133,6 +136,7 @@ function categoryCheck(category) {
           scanNums: res.data.data.docs[i].scan_num,
           likeNum: res.data.data.docs[i].like_num,
           uploadTime: res.data.data.docs[i].upload_time,
+          docId: res.data.data.docs[i].doc_id,
         };
       }
     })
@@ -143,8 +147,13 @@ function categoryCheck(category) {
     });
 }
 
-function clickCard() {
-  console.log("clickCard");
+function clickCard(rs) {
+  router.push({
+    name: "resourceInfo",
+    params: {
+      id: rs.docId,
+    },
+  });
 }
 </script>
 

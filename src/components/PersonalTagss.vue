@@ -32,7 +32,7 @@
           <el-card
             class="personalTags-resources-col-card"
             shadow="hover"
-            @click="clickCard()"
+            @click="clickCard(rs)"
           >
             <div class="personalTags-resources-col-title">
               <p><span>标题：</span>{{ rs.title }}</p>
@@ -63,6 +63,9 @@
 import { ref, watch, onMounted } from "vue";
 import api from "@api/index.js";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 let tags = ref([]);
 let tagLoading = ref(false);
@@ -124,6 +127,7 @@ function tagCheck(tag) {
           scanNums: res.data.data.docs[i].scan_num,
           likeNum: res.data.data.docs[i].like_num,
           uploadTime: res.data.data.docs[i].upload_time,
+          docId: res.data.data.docs[i].doc_id,
         };
       }
     })
@@ -134,8 +138,13 @@ function tagCheck(tag) {
     });
 }
 
-function clickCard() {
-  console.log("clickCard");
+function clickCard(rs) {
+  router.push({
+    name: "resourceInfo",
+    params: {
+      id: rs.docId,
+    },
+  });
 }
 </script>
 
