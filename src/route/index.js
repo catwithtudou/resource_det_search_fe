@@ -7,6 +7,8 @@ import personalTags from "@views/personalTags.vue";
 import personalCategories from "@views/personalCategories.vue";
 import resourceInfo from "@views/resourceInfo.vue";
 import uploadResource from "@views/uploadResource.vue";
+import resourceHome from "@views/resourceHome.vue";
+import resourceSearch from "@views/resourceSearch.vue";
 
 import store from "@/store";
 
@@ -49,6 +51,16 @@ const routes = [
     path:"/resource/upload",
     name:"uploadResource",
     component: uploadResource,
+  },
+  {
+    path:"/resource/home",
+    name:"resourceHome",
+    component: resourceHome,
+  },
+  {
+    path:"/resource/search",
+    name:"resourceSearch",
+    component: resourceSearch,
   }
 ];
 
