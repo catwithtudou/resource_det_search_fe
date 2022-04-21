@@ -15,3 +15,19 @@ export function getUserDmResource(query) {
       params: query,
     });
   }
+
+  export function getUserDmDetailResource(query) {
+    return axios({
+      url: "/resource/info",
+      method: "get",
+      params: query,
+    });
+  }
+
+  export function addLike(data) {
+    return axios({
+      url: "/resource/like",
+      method: "put",
+      data: data,
+    });
+  }

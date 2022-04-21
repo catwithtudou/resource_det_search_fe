@@ -14,7 +14,7 @@
         :key="i"
         :span="12"
       >
-        <el-card class="personalResource-col-card" shadow="hover" @click="clickCard()">
+        <el-card class="personalResource-col-card" shadow="hover" @click="clickCard(rs)">
           <div class="personalResource-col-title">
             <p><span>标题：</span>{{ rs.title }}</p>
           </div>
@@ -52,6 +52,10 @@
 import { ref, onMounted } from "vue";
 import api from "@api/index.js";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
 
 let resourceLoading = ref(false);
 let resources = ref([]);
@@ -76,6 +80,8 @@ onMounted(() => {
           scanNums: res.data.data[i].scan_num,
           likeNum: res.data.data[i].like_num,
           uploadTime: res.data.data[i].upload_time,
+          docId: res.data.data[i].doc_id,
+          uid: res.data.data[i].uid,
         };
         let handleDm = (dms) => {
           if (dms.length == 0) {
@@ -97,10 +103,14 @@ onMounted(() => {
     });
 });
 
-function clickCard() {
-  console.log("clickCard");
+function clickCard(rs) {
+  router.push({
+    name: "resourceInfo",
+    params: {
+      id: rs.docId,
+    },
+  });
 }
-
 </script>
 <style lang="less" scoped>
 .personalResource {

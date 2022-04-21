@@ -5,6 +5,7 @@ import personal from "@views/personal.vue";
 import personalResource from "@views/personalResource.vue";
 import personalTags from "@views/personalTags.vue";
 import personalCategories from "@views/personalCategories.vue";
+import resourceInfo from "@views/resourceInfo.vue";
 
 import store from "@/store";
 
@@ -38,6 +39,11 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/resource/info/:id",
+    name: "resourceInfo",
+    component: resourceInfo,
+  }
 ];
 
 const router = createRouter({

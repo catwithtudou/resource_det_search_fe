@@ -3,6 +3,7 @@
 const state = {
   token: "",
   name: "",
+  avatar:"",
 };
 
 // getters
@@ -11,6 +12,7 @@ const getters = {
     return {
       token: state.token,
       name: state.name,
+      avatar: state.avatar,
     };
   },
   isUserLogin() {

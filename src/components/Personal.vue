@@ -1,15 +1,15 @@
 ﻿<template>
-  <div class="personal">
+  <div>
     <el-container>
-      <el-header class="personal-header">
-        <el-row justify="center" align="middle" class="personal-header-rows">
+      <el-header class="main-header">
+        <el-row justify="center" align="middle" class="main-header-rows">
           <el-col :span="14">
-            <div class="personal-header-title">
+            <div class="main-header-title">
               <h2>高校课程资源智能识别与搜索系统</h2>
             </div>
           </el-col>
           <el-col :span="8">
-            <div class="personal-header-upload">
+            <div class="main-header-upload">
               <el-button type="primary" size="large"
                 >Upload Resource
                 <el-icon class="el-icon--right">
@@ -19,7 +19,7 @@
             </div>
           </el-col>
           <el-col :span="2">
-            <div class="personal-header-user">
+            <div class="main-header-user">
               <el-button
                 type="primary"
                 class="el-icon--right"
@@ -37,23 +37,29 @@
       </el-header>
       <el-container class="personal-base" v-model="userInfo" v-loading="userInfoLoading">
         <el-aside class="personal-base-avater">
-          <el-image :src="userInfo.avatarUrl" fit="fill" lazy />
-          <el-divider />
-          <div class="personal-base-avater-info">
-            <el-button type="text" :icon="Edit" @click="editIntro()"
-              >编辑个人信息</el-button
-            >
-            <el-upload
-              :action="uploadAvatar.action"
-              :name="uploadAvatar.name"
-              :headers="uploadAvatar.header"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-            >
-              <el-button type="text" :icon="Upload">上传头像</el-button>
-            </el-upload>
-          </div>
+          <el-row justify="end" align="middle">
+            <el-col>
+              <el-image :src="userInfo.avatarUrl" fit="fill" lazy />
+            </el-col>
+            <el-divider />
+            <el-col>
+              <div class="personal-base-avater-info">
+                <el-button type="text" :icon="Edit" @click="editIntro()"
+                  >编辑个人信息</el-button
+                >
+                <el-upload
+                  :action="uploadAvatar.action"
+                  :name="uploadAvatar.name"
+                  :headers="uploadAvatar.header"
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccess"
+                  :before-upload="beforeAvatarUpload"
+                >
+                  <el-button type="text" :icon="Upload">上传头像</el-button>
+                </el-upload>
+              </div>
+            </el-col>
+          </el-row>
         </el-aside>
         <el-main class="personal-base-info">
           <el-row justify="start">
@@ -117,9 +123,15 @@
 </template>
 
 <script setup>
-import { Upload, Avatar } from "@element-plus/icons-vue";
 import { ref, computed, onMounted } from "vue";
-import { Document, CollectionTag, Folder, Edit } from "@element-plus/icons-vue";
+import {
+  Document,
+  CollectionTag,
+  Folder,
+  Edit,
+  Upload,
+  Avatar,
+} from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -128,10 +140,9 @@ import api from "@api/index.js";
 let store = useStore();
 let router = useRouter();
 
-let topName = computed(() => store.state.home.name);
 let userToken = computed(() => store.state.home.token);
 let userInfo = ref({
-  avatarUrl: "",
+  avatarUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
   name: "",
   role: "",
   school: "",
@@ -147,6 +158,16 @@ let uploadAvatar = ref({
     Authorization: "Bearer " + userToken.value,
   },
 });
+
+let topName = computed(() => store.state.home.name);
+
+// 顶栏部分
+
+function topNameSkip() {
+  router.push("/personal");
+}
+
+// 获取个人信息部分
 
 onMounted(() => {
   userInfoLoading.value = true;
@@ -178,6 +199,8 @@ onMounted(() => {
     });
 });
 
+// 路由导航部分
+
 function handleOpen(key, keyPath) {
   // console.log("open:" + key);
 }
@@ -192,10 +215,7 @@ function handleSelect(index, indexPath, item, routeItem) {
   // console.log("select:" + routeItem);
 }
 
-function topNameSkip() {
-  router.push("/personal");
-}
-
+// 编辑个人资料部分
 function editIntro() {
   ElMessageBox.prompt("请输入想要修改的简介（限制100字以内）", "编辑信息", {
     confirmButtonText: "确认",
@@ -227,6 +247,7 @@ function editIntro() {
     .catch(() => {});
 }
 
+// 上传头像部分
 function handleAvatarSuccess(response, uploadFile, file) {
   if (response.code !== 0) {
     ElMessage.error("上传头像失败，请稍后重试~");
@@ -249,77 +270,74 @@ function beforeAvatarUpload(rawFile) {
 </script>
 
 <style lang="less" scoped>
-.personal {
-  .personal-header {
-    padding: 0;
-    height: 8vh;
-    width: 100%;
-    background-color: #d9ecff;
-
-    .personal-header-rows {
-      .personal-header-title {
-        padding-left: 20px;
-        color: #337ecc;
-      }
-
-      .personal-header-upload {
-        text-align: center;
-
-        .el-button {
-          width: 70%;
-        }
-      }
-
-      .personal-header-user {
-        text-align: center;
-      }
+.main-header {
+  padding: 0;
+  height: 10vh;
+  width: 100%;
+  background-color: #d9ecff;
+  .main-header-rows {
+    .main-header-title {
+      padding-left: 20px;
+      color: #337ecc;
     }
-  }
 
-  .personal-base {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ecf5ff;
-    height: 30vh;
-
-    .personal-base-avater {
+    .main-header-upload {
       text-align: center;
-      width: 20vw;
-      height: 25vh;
-      border-right: 5px solid #337ecc;
 
-      .el-image {
-        border-radius: 100%;
-        width: 10vw;
-      }
-
-      .personal-base-avater-info {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
+      .el-button {
+        width: 70%;
       }
     }
 
-    .personal-base-info {
-      font-size: 10px;
+    .main-header-user {
+      text-align: center;
+    }
+  }
+}
+.personal-base {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ecf5ff;
+  height: 40vh;
 
-      span {
-        font-weight: bold;
-        color: #337ecc;
-      }
+  .personal-base-avater {
+    text-align: center;
+    width: 20vw;
+    height: 40vh;
+    border-right: 5px solid #337ecc;
+
+    .el-image {
+      margin-top: 30px;
+      border-radius: 100%;
+      width: 10vw;
+    }
+
+    .personal-base-avater-info {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
     }
   }
 
-  .personal-resource {
-    .personal-resource-type {
-      width: 20vw;
-      height: 100vh;
+  .personal-base-info {
+    font-size: 10px;
 
-      .personal-resource-type-menu {
-        height: 100%;
-        width: 100%;
-      }
+    span {
+      font-weight: bold;
+      color: #337ecc;
+    }
+  }
+}
+
+.personal-resource {
+  .personal-resource-type {
+    width: 20vw;
+    height: 100vh;
+
+    .personal-resource-type-menu {
+      height: 100%;
+      width: 100%;
     }
   }
 }
