@@ -41,13 +41,16 @@
         </el-col>
       </el-row>
 
-      <el-row justify="center" class="search-input">
+      <el-row justify="center" class="search-input" :gutter="12">
         <el-col :span="12">
           <el-input
             v-model="searchKey"
             placeholder="请输入搜索关键词"
             size="large"
-            :suffix-icon="Search"
+            :prefix-icon="Search"
+            @change="handleChangeSearch"
+            @keyup.enter="handleSearch"
+            clearable
           />
         </el-col>
       </el-row>
@@ -83,6 +86,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { Upload, Avatar, Search } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
+import { ElMessage } from "element-plus";
 
 const store = useStore();
 const router = useRouter();
@@ -107,11 +111,30 @@ function backHome() {
 
 // main-search 部分
 
-let searchKey = ref();
+let searchKey = ref("");
+
+function handleChangeSearch(value) {
+  searchKey.value = value;
+}
+
+function handleSearch() {
+  if (searchKey.value === "") {
+    ElMessage.warning("搜索关键词不能为空哟~");
+    return;
+  }
+  router.push({
+    name: "resourceSearch",
+    query: {
+      search: searchKey.value,
+    },
+  });
+}
 
 // main-info 部分
 
 // main-info-header 部分
+
+// TODO:Part维度动态获取生成菜单
 
 let activeMenu = ref("all");
 

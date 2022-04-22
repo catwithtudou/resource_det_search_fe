@@ -10,6 +10,7 @@ import uploadResource from "@views/uploadResource.vue";
 import resourceHome from "@views/resourceHome.vue";
 import resourceSearch from "@views/resourceSearch.vue";
 import resourceHomePart from "@views/resourceHomePart.vue";
+import resourceSearchPart from "@views/resourceSearchPart.vue";
 
 import store from "@/store";
 
@@ -68,6 +69,13 @@ const routes = [
     path:"/resource/search",
     name:"resourceSearch",
     component: resourceSearch,
+    children: [
+      {
+        path: "part/:partId",
+        name: "resourceSearchPart",
+        component: resourceSearchPart,
+      }
+    ],
   }
 ];
 
