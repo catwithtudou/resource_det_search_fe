@@ -111,7 +111,9 @@ async function userLogin(ruleFormRef) {
           })
           .then((res) => {
             ElMessage.success("登录成功，欢迎进入~");
-            router.push("/personal");
+            router.push({
+              name: "resourceHome",
+            });
           })
           .catch((err) => {
             ElMessage.error("网络错误，请检查网络连接");

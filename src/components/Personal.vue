@@ -86,14 +86,7 @@
       </el-container>
       <el-container class="personal-resource">
         <el-aside class="personal-resource-type">
-          <el-menu
-            class="personal-resource-type-menu"
-            @open="handleOpen"
-            @close="handleClose"
-            @select="handleSelect"
-            unique-opened
-            router
-          >
+          <el-menu class="personal-resource-type-menu" unique-opened router>
             <el-menu-item index="1" route="/personal/resource">
               <el-icon>
                 <document />
@@ -115,7 +108,11 @@
           </el-menu>
         </el-aside>
         <el-main class="personal-resource-info">
-          <router-view></router-view>
+          <router-view v-slot="{ Component }">
+            <transition name="route" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -167,15 +164,16 @@ function topNameSkip() {
   router.push("/personal");
 }
 
+function backHome() {
+  router.push({
+    name: "resourceHome",
+  });
+}
+
 function uploadResource() {
   router.push({
     name: "uploadResource",
   });
-}
-
-function backHome() {
-  //TODO:跳转至主页搜索页面
-  console.log("Back home");
 }
 
 // 获取个人信息部分
@@ -216,19 +214,19 @@ onMounted(() => {
 
 // 路由导航部分
 
-function handleOpen(key, keyPath) {
-  // console.log("open:" + key);
-}
-function handleClose(key, keyPath) {
-  // console.log("close:" + key);
-}
+// function handleOpen(key, keyPath) {
+//   // console.log("open:" + key);
+// }
+// function handleClose(key, keyPath) {
+//   // console.log("close:" + key);
+// }
 
-function handleSelect(index, indexPath, item, routeItem) {
-  // console.log("select:" + index);
-  // console.log("select:" + indexPath);
-  // console.log("select:" + item);
-  // console.log("select:" + routeItem);
-}
+// function handleSelect(index, indexPath, item, routeItem) {
+//   // console.log("select:" + index);
+//   // console.log("select:" + indexPath);
+//   // console.log("select:" + item);
+//   // console.log("select:" + routeItem);
+// }
 
 // 编辑个人资料部分
 function editIntro() {
@@ -353,5 +351,23 @@ function beforeAvatarUpload(rawFile) {
       width: 100%;
     }
   }
+}
+
+.route-enter-from {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.route-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.route-leave-to {
+  opacity: 0;
+  transform: translateX(-100px);
+}
+
+.route-leave-active {
+  transition: all 0.3s ease-in;
 }
 </style>

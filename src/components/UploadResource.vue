@@ -3,13 +3,13 @@
     <el-header class="main-header">
       <el-row justify="center" align="middle" class="main-header-rows">
         <el-col :span="14">
-          <div class="main-header-title">
+          <div class="main-header-title" @click="backHome()">
             <h2>高校课程资源智能识别与搜索系统</h2>
           </div>
         </el-col>
         <el-col :span="8">
           <div class="main-header-upload">
-            <el-button type="primary" size="large"
+            <el-button type="primary" size="large" @click="uploadResource()"
               >Upload Resource
               <el-icon class="el-icon--right">
                 <Upload />
@@ -163,6 +163,16 @@ let topName = computed(() => store.state.home.name);
 
 function topNameSkip() {
   router.push("/personal");
+}
+function backHome() {
+  router.push({
+    name: "resourceHome",
+  });
+}
+function uploadResource() {
+  router.push({
+    name: "uploadResource",
+  });
 }
 
 // Main 部分

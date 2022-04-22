@@ -161,6 +161,12 @@ function topNameSkip() {
   router.push("/personal");
 }
 
+function backHome() {
+  router.push({
+    name: "resourceHome",
+  });
+}
+
 function uploadResource() {
   router.push({
     name: "uploadResource",
@@ -178,14 +184,13 @@ let user = ref({
   },
 });
 
+// TODO:获取用户所有上传数字进行展示
+
 function otherPersonal() {
   // TODO:跳转他人主页(目前暂时跳转到个人主页)
 }
 
-function backHome() {
-  //TODO:跳转至主页搜索页面
-  console.log("Back home");
-}
+
 
 // main 部分
 let mainLoading = ref(false);

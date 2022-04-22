@@ -51,7 +51,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import api from "@api/index.js";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();

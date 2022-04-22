@@ -31,3 +31,18 @@ export function getUserDmResource(query) {
       data: data,
     });
   }
+
+  export function getAllResource() {
+    return axios({
+      url: "/resource/all",
+      method: "get",
+    });
+  }
+
+  export function getPartResource(query) {
+    return axios({
+      url: "/resource/dimension",
+      method: "get",
+      params: query,
+    });
+  }
