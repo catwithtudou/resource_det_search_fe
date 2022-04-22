@@ -109,6 +109,7 @@ let resourceLoading = ref(false);
 let resources = ref([]);
 let searchKey = ref();
 let nothing = ref();
+let searchPart = ref(["all", "1", "2", "3", "4", "5", "6"]);
 
 // TODO:补充搜索结果排序部分
 
@@ -120,6 +121,11 @@ function getData(newValue) {
     resourceLoading.value = false;
     return;
   }
+  if (searchPart.value.indexOf(newValue) === -1) {
+    resourceLoading.value = false;
+    return;
+  }
+
   if (!searchKey.value) {
     resourceLoading.value = false;
     return;

@@ -50,33 +50,37 @@ const routes = [
     component: resourceInfo,
   },
   {
-    path:"/resource/upload",
-    name:"uploadResource",
+    path: "/resource/upload",
+    name: "uploadResource",
     component: uploadResource,
   },
   {
-    path:"/resource/home",
-    name:"resourceHome",
+    path: "/resource/home",
+    name: "resourceHome",
     component: resourceHome,
     children: [
       {
         path: "part/:partId",
         component: resourceHomePart,
-      }
+      },
     ],
   },
   {
-    path:"/resource/search",
-    name:"resourceSearch",
+    path: "/resource/search",
+    name: "resourceSearch",
     component: resourceSearch,
     children: [
       {
         path: "part/:partId",
         name: "resourceSearchPart",
         component: resourceSearchPart,
-      }
+      },
     ],
-  }
+  },
+  {
+    path: "/:catchAll(.*)",
+    redirect: "/",
+  },
 ];
 
 const router = createRouter({

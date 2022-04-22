@@ -119,6 +119,8 @@ function backHome() {
 
 let searchKey = ref();
 
+let searchPart = ref(["all", "1", "2", "3", "4", "5", "6"]);
+
 function handleChangeSearch(value) {
   searchKey.value = value;
 }
@@ -154,7 +156,16 @@ watch(
       activeMenu.value = "";
       return;
     }
-
+    let idx = path.split("/").pop().toLowerCase();
+    if (searchPart.value.indexOf(idx) === -1) {
+      ElMessage.error("访问异常哟~");
+      activeMenu.value = "";
+      menuDisable.value = true;
+      router.push({
+        path: "/resource/search",
+      });
+      return;
+    }
     activeMenu.value = path.split("/").pop().toLowerCase();
     router.push({
       path: path,
