@@ -75,6 +75,17 @@
           </el-card>
         </el-col>
       </el-row>
+      <div class="main-pagination" v-if="isShowLoadMore">
+        <el-button
+          type="primary"
+          @click="loadMore(checkCategories.id)"
+          :loading="loadMoreLoading"
+          v-if="isLoadMore"
+        >
+          加载更多</el-button
+        >
+        <p v-if="!isLoadMore">===已浏览完所有资源到底啦===</p>
+      </div>
     </div>
   </div>
 </template>
@@ -125,6 +136,11 @@ let isChecked = ref(false);
 let resources = ref([]);
 let categoryResourceLoading = ref(false);
 let addCategoryLoading = ref(false);
+let isLoadMore = ref(false);
+let offset = ref(0);
+let size = ref(1);
+let loadMoreLoading = ref(false);
+let isShowLoadMore = ref(false);
 
 function categoryCheck(category) {
   if (!isChecked.value) {
@@ -135,16 +151,23 @@ function categoryCheck(category) {
     id: category.id,
     name: category.name,
   };
+
+  resources.value = [];
+  offset.value = 0;
+  isLoadMore.value = false;
+  isShowLoadMore.value = false;
+
   isLoading.value = true;
   categoryResourceLoading.value = true;
   api.document
     .getUserDmResource({
       did: category.id,
+      offset: Number(offset.value),
+      size: Number(size.value),
     })
     .then((res) => {
       isLoading.value = false;
       categoryResourceLoading.value = false;
-      resources.value = [];
 
       if (res.data.code != 0) {
         ElMessage.error("服务器异常，请稍后重试~");
@@ -166,6 +189,13 @@ function categoryCheck(category) {
           docId: res.data.data.docs[i].doc_id,
         };
       }
+      isShowLoadMore.value = true;
+      if (res.data.data.length < size.value) {
+        isLoadMore.value = false;
+      } else {
+        isLoadMore.value = true;
+      }
+      offset.value = resources.value.length;
     })
     .catch((err) => {
       isLoading.value = false;
@@ -214,6 +244,51 @@ function clickCard(rs) {
     },
   });
 }
+
+function loadMore(categoryId) {
+  loadMoreLoading.value = true;
+  api.document
+    .getUserDmResource({
+      did: categoryId,
+      offset: Number(offset.value),
+      size: Number(size.value),
+    })
+    .then((res) => {
+      loadMoreLoading.value = false;
+      if (res.data.code != 0) {
+        ElMessage.error("服务器异常，请稍后重试~");
+        return;
+      }
+      if (!res.data.data || !res.data.data.docs || res.data.data.docs.length === 0) {
+        isLoadMore.value = false;
+        ElMessage.info("暂无资源~");
+        return;
+      }
+      for (let i = 0, j = resources.value.length; i < res.data.data.docs.length; i++) {
+        resources.value[i + j] = {
+          title: res.data.data.docs[i].title,
+          fileType: res.data.data.docs[i].type,
+          intro: res.data.data.docs[i].intro,
+          downloadNum: res.data.data.docs[i].download_num,
+          scanNums: res.data.data.docs[i].scan_num,
+          likeNum: res.data.data.docs[i].like_num,
+          uploadTime: res.data.data.docs[i].upload_time,
+          docId: res.data.data.docs[i].doc_id,
+        };
+      }
+      if (res.data.data.length < size.value) {
+        isLoadMore.value = false;
+      } else {
+        isLoadMore.value = true;
+      }
+      offset.value = resources.value.length;
+    })
+    .catch((err) => {
+      isLoading.value = false;
+      tagResourceLoading.value = false;
+      ElMessage.error("网络错误，请检查网络连接");
+    });
+}
 </script>
 
 <style lang="less" scoped>
@@ -252,6 +327,16 @@ function clickCard(rs) {
         span {
           color: #a0cfff;
         }
+      }
+    }
+
+    .main-pagination {
+      margin-top: 20px;
+      text-align: center;
+
+      .el-button {
+        width: 30vw;
+        height: 5vh;
       }
     }
   }

@@ -70,16 +70,22 @@ const route = useRoute();
 
 let resourceLoading = ref(false);
 let resources = ref([]);
-let isLoadMore = ref(true);
+let isLoadMore = ref(false);
 let offset = ref(0);
 let size = ref(10);
-let loadMoreLoading = ref(true);
-let isShowLoadMore = ref(true);
+let loadMoreLoading = ref(false);
+let isShowLoadMore = ref(false);
 
 onMounted(() => {
+  resources.value = [];
   resourceLoading.value = true;
+  isLoadMore.value = false;
+  isShowLoadMore.value = false;
   api.document
-    .getUserAllResource({})
+    .getUserAllResource({
+      offset: Number(offset.value),
+      size: Number(size.value),
+    })
     .then((res) => {
       resourceLoading.value = false;
       resources.value = [];
@@ -117,6 +123,13 @@ onMounted(() => {
         resources.value[i].categories = handleDm(res.data.data[i].categories);
         resources.value[i].tags = handleDm(res.data.data[i].tags);
       }
+      isShowLoadMore.value = true;
+      if (res.data.data.length < size.value) {
+        isLoadMore.value = false;
+      } else {
+        isLoadMore.value = true;
+      }
+      offset.value = resources.value.length;
     })
     .catch((err) => {
       resourceLoading.value = false;
@@ -131,6 +144,63 @@ function clickCard(rs) {
       id: rs.docId,
     },
   });
+}
+
+function loadMore() {
+  loadMoreLoading.value = true;
+  api.document
+    .getUserAllResource({
+      offset: Number(offset.value),
+      size: Number(size.value),
+    })
+    .then((res) => {
+      loadMoreLoading.value = false;
+      if (res.data.code != 0) {
+        ElMessage.error("服务器异常，请稍后重试~");
+        return;
+      }
+      if (!res.data.data) {
+        isLoadMore.value = false;
+        ElMessage.info("暂无资源~");
+        return;
+      }
+      for (let i = 0, j = resources.value.length; i < res.data.data.length; i++) {
+        resources.value[i + j] = {
+          title: res.data.data[i].title,
+          fileType: res.data.data[i].type,
+          intro: res.data.data[i].intro,
+          part: res.data.data[i].part,
+          downloadNum: res.data.data[i].download_num,
+          scanNums: res.data.data[i].scan_num,
+          likeNum: res.data.data[i].like_num,
+          uploadTime: res.data.data[i].upload_time,
+          docId: res.data.data[i].doc_id,
+          uid: res.data.data[i].uid,
+        };
+        let handleDm = (dms) => {
+          if (dms.length == 0) {
+            return "暂无";
+          }
+          let dm = [];
+          for (let i = 0; i < dms.length; i++) {
+            dm[i] = dms[i].name;
+          }
+          return "[" + dm.join("，") + "]";
+        };
+        resources.value[i].categories = handleDm(res.data.data[i].categories);
+        resources.value[i].tags = handleDm(res.data.data[i].tags);
+      }
+      if (res.data.data.length < size.value) {
+        isLoadMore.value = false;
+      } else {
+        isLoadMore.value = true;
+      }
+      offset.value = resources.value.length;
+    })
+    .catch((err) => {
+      resourceLoading.value = false;
+      ElMessage.error("网络错误，请检查网络连接");
+    });
 }
 </script>
 <style lang="less" scoped>
