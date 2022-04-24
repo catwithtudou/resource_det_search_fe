@@ -150,6 +150,9 @@ watch(
   () => route.path,
   (path) => {
     activeMenu.value = getPathLastKey(path);
+    router.push({
+      path: "/resource/home/part/" + activeMenu.value,
+    });
   }
 );
 

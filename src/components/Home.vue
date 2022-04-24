@@ -98,28 +98,34 @@ async function userLogin(ruleFormRef) {
         return;
       }
       isLoginLoading.value = true;
-      api.user.userLogin(form.value).then((res) => {
-        isLoginLoading.value = false;
-        if (res.data.code != 0) {
-          ElMessage.error("登录失败，请检查账号密码");
-          return;
-        }
-        store
-          .dispatch("home/userLogin", {
-            token: res.data.data.token,
-            name: res.data.data.name,
-          })
-          .then((res) => {
-            ElMessage.success("登录成功，欢迎进入~");
-            router.push({
-              name: "resourceHome",
+      api.user
+        .userLogin(form.value)
+        .then((res) => {
+          isLoginLoading.value = false;
+          if (res.data.code != 0) {
+            ElMessage.error("登录失败，请检查账号密码");
+            return;
+          }
+          store
+            .dispatch("home/userLogin", {
+              token: res.data.data.token,
+              name: res.data.data.name,
+            })
+            .then((res) => {
+              ElMessage.success("登录成功，欢迎进入~");
+              router.push({
+                name: "resourceHome",
+              });
+            })
+            .catch((err) => {
+              ElMessage.error("网络错误，请检查网络连接");
+              isLoginLoading.value = false;
             });
-          })
-          .catch((err) => {
-            ElMessage.error("网络错误，请检查网络连接");
-            isLoginLoading.value = false;
-          });
-      });
+        })
+        .catch((err) => {
+          ElMessage.error("网络错误，请检查网络连接");
+          isLoginLoading.value = false;
+        });
     })
     .catch((err) => {
       isLoginLoading.value = false;
@@ -160,8 +166,8 @@ function signUp() {
       justify-content: center;
       align-items: center;
 
-      width: 40vh;
-      height: 35vh;
+      width: 60vh;
+      height: 50vh;
 
       background-color: @color-white;
       border-radius: 25px;

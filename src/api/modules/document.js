@@ -32,10 +32,11 @@ export function getUserDmResource(query) {
     });
   }
 
-  export function getAllResource() {
+  export function getAllResource(query) {
     return axios({
       url: "/resource/all",
       method: "get",
+      params: query,
     });
   }
 
