@@ -145,6 +145,8 @@ watch(
   (path) => {
     if (path.startsWith("/resource/search/part/")) {
       activeMenu.value = path.split("/").pop().toLowerCase();
+    }else{
+        activeMenu.value = "";
     }
   }
 );

@@ -160,6 +160,7 @@ function clickCard(rs) {
   }
 
   .main-pagination {
+    margin-top: 20px;
     text-align: center;
 
     .el-button {

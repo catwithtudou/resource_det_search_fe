@@ -86,20 +86,25 @@
       </el-container>
       <el-container class="personal-resource">
         <el-aside class="personal-resource-type">
-          <el-menu class="personal-resource-type-menu" unique-opened router>
-            <el-menu-item index="1" route="/personal/resource">
+          <el-menu
+            class="personal-resource-type-menu"
+            :default-active="activeMenu"
+            unique-opened
+            router
+          >
+            <el-menu-item index="resource" route="/personal/resource">
               <el-icon>
                 <document />
               </el-icon>
               <span>已上传资源</span>
             </el-menu-item>
-            <el-menu-item index="2" route="/personal/tags">
+            <el-menu-item index="tags" route="/personal/tags">
               <el-icon>
                 <collection-tag />
               </el-icon>
               <span>标签</span>
             </el-menu-item>
-            <el-menu-item index="3" route="/personal/categories">
+            <el-menu-item index="categories" route="/personal/categories">
               <el-icon>
                 <folder />
               </el-icon>
@@ -120,7 +125,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import {
   Document,
   CollectionTag,
@@ -130,12 +135,13 @@ import {
   Avatar,
 } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import api from "@api/index.js";
 
 let store = useStore();
 let router = useRouter();
+let route = useRoute();
 
 let userToken = computed(() => store.state.home.token);
 let userInfo = ref({
@@ -158,6 +164,8 @@ let uploadAvatar = ref({
 
 let topName = computed(() => store.state.home.name);
 
+let activeMenu = ref("");
+
 // 顶栏部分
 
 function topNameSkip() {
@@ -175,58 +183,6 @@ function uploadResource() {
     name: "uploadResource",
   });
 }
-
-// 获取个人信息部分
-
-onMounted(() => {
-  userInfoLoading.value = true;
-  api.user
-    .userInfo()
-    .then((res) => {
-      userInfoLoading.value = false;
-      if (res.data.code != 0) {
-        ElMessage.error("服务器异常，请稍后重试~");
-        return;
-      }
-      let resData = res.data.data;
-      if (!resData.intro) {
-        resData.intro = "这个人很懒，什么都没有留下~";
-      }
-      if (!resData.avatar) {
-        resData.avatar =
-          "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
-      }
-      userInfo.value = {
-        avatarUrl: resData.avatar,
-        name: resData.name,
-        role: resData.role,
-        school: resData.school,
-        sid: resData.sid,
-        sex: resData.sex,
-        intro: resData.intro,
-      };
-    })
-    .catch((err) => {
-      userInfoLoading.value = false;
-      ElMessage.error("网络错误，请检查网络连接");
-    });
-});
-
-// 路由导航部分
-
-// function handleOpen(key, keyPath) {
-//   // console.log("open:" + key);
-// }
-// function handleClose(key, keyPath) {
-//   // console.log("close:" + key);
-// }
-
-// function handleSelect(index, indexPath, item, routeItem) {
-//   // console.log("select:" + index);
-//   // console.log("select:" + indexPath);
-//   // console.log("select:" + item);
-//   // console.log("select:" + routeItem);
-// }
 
 // 编辑个人资料部分
 function editIntro() {
@@ -280,6 +236,62 @@ function beforeAvatarUpload(rawFile) {
   }
   return true;
 }
+
+// 子路由部分
+watch(
+  () => route.path,
+  (path) => {
+    updateActiveMenu(path);
+  }
+);
+
+function updateActiveMenu(path) {
+  activeMenu.value = "";
+  if (path === "/personal/tags") {
+    activeMenu.value = "tags";
+  } else if (path === "/personal/resource") {
+    activeMenu.value = "resource";
+  } else if (path === "/personal/categories") {
+    activeMenu.value = "categories";
+  }
+}
+
+// 获取个人信息部分
+
+onMounted(() => {
+  updateActiveMenu(route.path);
+  userInfoLoading.value = true;
+  api.user
+    .userInfo()
+    .then((res) => {
+      userInfoLoading.value = false;
+      if (res.data.code != 0) {
+        ElMessage.error("服务器异常，请稍后重试~");
+        return;
+      }
+      let resData = res.data.data;
+      if (!resData.intro) {
+        resData.intro = "这个人很懒，什么都没有留下~";
+      }
+      if (!resData.avatar) {
+        resData.avatar =
+          "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
+      }
+      userInfo.value = {
+        avatarUrl: resData.avatar,
+        name: resData.name,
+        role: resData.role,
+        school: resData.school,
+        sid: resData.sid,
+        sex: resData.sex,
+        intro: resData.intro,
+      };
+    })
+    .catch((err) => {
+      userInfoLoading.value = false;
+      ElMessage.error("网络错误，请检查网络连接");
+    });
+});
 </script>
 
 <style lang="less" scoped>
