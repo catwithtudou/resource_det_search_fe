@@ -187,8 +187,8 @@ function loadMore() {
           }
           return "[" + dm.join("，") + "]";
         };
-        resources.value[i].categories = handleDm(res.data.data[i].categories);
-        resources.value[i].tags = handleDm(res.data.data[i].tags);
+        resources.value[i + j].categories = handleDm(res.data.data[i].categories);
+        resources.value[i + j].tags = handleDm(res.data.data[i].tags);
       }
       if (res.data.data.length < size.value) {
         isLoadMore.value = false;

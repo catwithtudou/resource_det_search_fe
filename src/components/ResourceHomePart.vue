@@ -47,30 +47,30 @@
       </div>
     </el-main>
     <el-aside class="resource-part-aside">
-      <el-menu class="aside-menu">
-        <el-menu-item index="1">
+      <el-menu class="aside-menu" :default-active="sortByMenu" @select="handleSelectMenu">
+        <el-menu-item index="id">
+          <el-icon>
+            <timer />
+          </el-icon>
+          <span>按最新时间</span>
+        </el-menu-item>
+        <el-menu-item index="like_num">
           <el-icon>
             <star-filled />
           </el-icon>
           <span>点赞最多</span>
         </el-menu-item>
-        <el-menu-item index="2">
+        <el-menu-item index="scan_num">
           <el-icon>
             <reading />
           </el-icon>
           <span>浏览最多</span>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="download_num">
           <el-icon>
             <download />
           </el-icon>
           <span>下载最多</span>
-        </el-menu-item>
-        <el-menu-item index="4">
-          <el-icon>
-            <timer />
-          </el-icon>
-          <span>按最新时间</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -93,9 +93,11 @@ let resourceLoading = ref(false);
 let resources = ref([]);
 let isLoadMore = ref(false);
 let offset = ref(0);
-let size = ref(10);
+let size = ref(1);
 let loadMoreLoading = ref(false);
 let isShowLoadMore = ref(false);
+let sortByMenu = ref("");
+let sortByReq = ref("");
 
 // TODO:后续补充动态判断维度ID，目前写死该部分
 function checkPartId(partId) {
@@ -120,9 +122,22 @@ function errBackHome() {
   });
 }
 
+function sortByMenuActive(sortBy) {
+  sortByMenu.value = "";
+  if (sortBy === "") {
+    sortByMenu.value = "id";
+  } else if (sortBy === "like_num") {
+    sortByMenu.value = "like_num";
+  } else if (sortBy === "scan_num") {
+    sortByMenu.value = "scan_num";
+  } else if (sortBy === "download_num") {
+    sortByMenu.value = "download_num";
+  }
+}
+
 // TODO:补充排序选项
 
-function getData(newValue) {
+function getData(newValue, sortBy) {
   resourceLoading.value = true;
   isLoadMore.value = false;
   isShowLoadMore.value = false;
@@ -136,6 +151,7 @@ function getData(newValue) {
       .getAllResource({
         offset: Number(offset.value),
         size: Number(size.value),
+        sort_by: sortBy,
       })
       .then((res) => {
         resourceLoading.value = false;
@@ -173,9 +189,14 @@ function getData(newValue) {
           resources.value[i].categories = handleDm(res.data.data[i].categories);
           resources.value[i].tags = handleDm(res.data.data[i].tags);
         }
+        if (res.data.data.length < size.value) {
+          isLoadMore.value = false;
+        } else {
+          isLoadMore.value = true;
+        }
         isShowLoadMore.value = true;
-        isLoadMore.value = true;
         offset.value = resources.value.length;
+        sortByMenuActive(sortBy);
       })
       .catch((err) => {
         resourceLoading.value = false;
@@ -188,6 +209,7 @@ function getData(newValue) {
       did: Number(newValue),
       offset: Number(offset.value),
       size: Number(size.value),
+      sort_by: sortBy,
     })
     .then((res) => {
       resourceLoading.value = false;
@@ -225,9 +247,14 @@ function getData(newValue) {
         resources.value[i].categories = handleDm(res.data.data[i].categories);
         resources.value[i].tags = handleDm(res.data.data[i].tags);
       }
+      if (res.data.data.length < size.value) {
+        isLoadMore.value = false;
+      } else {
+        isLoadMore.value = true;
+      }
       isShowLoadMore.value = true;
-      isLoadMore.value = true;
       offset.value = resources.value.length;
+      sortByMenuActive(sortBy);
     })
     .catch((err) => {
       console.log(err);
@@ -237,7 +264,7 @@ function getData(newValue) {
   return;
 }
 
-function getLoadMoreData(newValue) {
+function getLoadMoreData(newValue, sortBy) {
   loadMoreLoading.value = true;
   isLoadMore.value = true;
   if (!checkPartId(newValue)) {
@@ -250,6 +277,7 @@ function getLoadMoreData(newValue) {
       .getAllResource({
         offset: Number(offset.value),
         size: Number(size.value),
+        sort_by: sortBy,
       })
       .then((res) => {
         loadMoreLoading.value = false;
@@ -285,8 +313,13 @@ function getLoadMoreData(newValue) {
             }
             return "[" + dm.join("，") + "]";
           };
-          resources.value[i].categories = handleDm(res.data.data[i].categories);
-          resources.value[i].tags = handleDm(res.data.data[i].tags);
+          resources.value[i + j].categories = handleDm(res.data.data[i].categories);
+          resources.value[i + j].tags = handleDm(res.data.data[i].tags);
+        }
+        if (res.data.data.length < size.value) {
+          isLoadMore.value = false;
+        } else {
+          isLoadMore.value = true;
         }
         offset.value = resources.value.length;
       })
@@ -301,6 +334,7 @@ function getLoadMoreData(newValue) {
       did: Number(newValue),
       offset: Number(offset.value),
       size: Number(size.value),
+      sort_by: sortBy,
     })
     .then((res) => {
       loadMoreLoading.value = false;
@@ -339,6 +373,11 @@ function getLoadMoreData(newValue) {
         resources.value[i].categories = handleDm(res.data.data[i].categories);
         resources.value[i].tags = handleDm(res.data.data[i].tags);
       }
+      if (res.data.data.length < size.value) {
+        isLoadMore.value = false;
+      } else {
+        isLoadMore.value = true;
+      }
       offset.value = resources.value.length;
     })
     .catch((err) => {
@@ -359,22 +398,35 @@ function clickCard(rs) {
 }
 
 function loadMore() {
-  getLoadMoreData(route.params.partId);
+  getLoadMoreData(route.params.partId, sortByReq.value);
+}
+
+function handleSelectMenu(index, indexPath, item) {
+  resources.value = [];
+  offset.value = 0;
+  sortByReq.value = index;
+  if (index === "id") {
+    sortByReq.value = "";
+  }
+  getData(route.params.partId, sortByReq.value);
 }
 
 watch(
   () => route.params.partId,
   (newValue) => {
+    if (route.path.startsWith("/resource/info/")) {
+      return;
+    }
     resources.value = [];
     offset.value = 0;
-    getData(newValue);
+    getData(newValue, sortByReq.value);
   }
 );
 
 onMounted(() => {
   resources.value = [];
   offset.value = 0;
-  getData(route.params.partId);
+  getData(route.params.partId, sortByReq.value);
 });
 </script>
 
