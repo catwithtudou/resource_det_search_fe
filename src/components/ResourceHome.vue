@@ -96,7 +96,9 @@ const route = useRoute();
 
 let topName = computed(() => store.state.home.name);
 function topNameSkip() {
-  router.push("/personal");
+  router.push({
+    name: "personal",
+  });
 }
 function uploadResource() {
   router.push({
@@ -136,32 +138,23 @@ function handleSearch() {
 
 // TODO:Part维度动态获取生成菜单
 
-let activeMenu = ref("all");
-
-function getPathLastKey(path) {
-  let idx = path.split("/").pop().toLowerCase();
-  if (idx === "home") {
-    idx = "all";
-  }
-  return idx;
-}
+let activeMenu = ref("");
 
 watch(
   () => route.path,
   (path) => {
-    activeMenu.value = getPathLastKey(path);
-    router.push({
-      path: "/resource/home/part/" + activeMenu.value,
-    });
+    if (path.startsWith("/resource/search/part/")) {
+      activeMenu.value = path.split("/").pop().toLowerCase();
+    }
   }
 );
 
 // onMounted 部分
 
 onMounted(() => {
-  activeMenu.value = getPathLastKey(route.path);
+  activeMenu.value = "";
   router.push({
-    path: "/resource/home/part/" + activeMenu.value,
+    name: "resourceHome",
   });
 });
 </script>

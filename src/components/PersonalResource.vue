@@ -45,6 +45,17 @@
         </el-card>
       </el-col>
     </el-row>
+    <div class="main-pagination" v-if="isShowLoadMore">
+      <el-button
+        type="primary"
+        @click="loadMore()"
+        :loading="loadMoreLoading"
+        v-if="isLoadMore"
+      >
+        加载更多</el-button
+      >
+      <p v-if="!isLoadMore">===已浏览完所有资源到底啦===</p>
+    </div>
   </div>
 </template>
 
@@ -59,6 +70,11 @@ const route = useRoute();
 
 let resourceLoading = ref(false);
 let resources = ref([]);
+let isLoadMore = ref(true);
+let offset = ref(0);
+let size = ref(10);
+let loadMoreLoading = ref(true);
+let isShowLoadMore = ref(true);
 
 onMounted(() => {
   resourceLoading.value = true;
@@ -140,6 +156,15 @@ function clickCard(rs) {
       span {
         color: #a0cfff;
       }
+    }
+  }
+
+  .main-pagination {
+    text-align: center;
+
+    .el-button {
+      width: 30vw;
+      height: 5vh;
     }
   }
 }

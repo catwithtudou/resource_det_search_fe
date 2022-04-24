@@ -157,7 +157,10 @@ watch(
       return;
     }
     let idx = path.split("/").pop().toLowerCase();
-    if (searchPart.value.indexOf(idx) === -1) {
+    if (
+      path.startsWith("/resource/search/part/") &&
+      searchPart.value.indexOf(idx) === -1
+    ) {
       ElMessage.error("访问异常哟~");
       activeMenu.value = "";
       menuDisable.value = true;
@@ -166,7 +169,8 @@ watch(
       });
       return;
     }
-    activeMenu.value = path.split("/").pop().toLowerCase();
+    //FIXME:向后撤退时过程是先丢失query
+    activeMenu.value = idx;
     router.push({
       path: path,
       query: {

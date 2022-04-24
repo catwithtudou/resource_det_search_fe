@@ -97,17 +97,40 @@ let size = ref(10);
 let loadMoreLoading = ref(false);
 let isShowLoadMore = ref(false);
 
+// TODO:后续补充动态判断维度ID，目前写死该部分
+function checkPartId(partId) {
+  if (!partId) {
+    return false;
+  }
+
+  let legalPartId = ["all", "1", "2", "3", "4", "5", "6"];
+  if (legalPartId.indexOf(partId) === -1) {
+    return false;
+  }
+
+  if (partId === undefined) {
+    return false;
+  }
+  return true;
+}
+
+function errBackHome() {
+  router.push({
+    name: "resourceHome",
+  });
+}
+
 // TODO:补充排序选项
 
 function getData(newValue) {
   resourceLoading.value = true;
   isLoadMore.value = false;
   isShowLoadMore.value = false;
-  if (!newValue) {
+  if (!checkPartId(newValue)) {
     resourceLoading.value = false;
+    errBackHome();
     return;
   }
-
   if (newValue === "all") {
     api.document
       .getAllResource({
@@ -217,8 +240,9 @@ function getData(newValue) {
 function getLoadMoreData(newValue) {
   loadMoreLoading.value = true;
   isLoadMore.value = true;
-  if (!newValue) {
+  if (!checkPartId(newValue)) {
     loadMoreLoading.value = false;
+    errBackHome();
     return;
   }
   if (newValue === "all") {
@@ -378,6 +402,7 @@ onMounted(() => {
     }
 
     .main-pagination {
+      margin-top: 20px;
       text-align: center;
 
       .el-button {
