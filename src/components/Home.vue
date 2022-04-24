@@ -29,6 +29,19 @@
                 autocomplete="off"
               />
             </el-form-item>
+            <el-form-item label="vertify code" prop="vertify_code">
+              <el-input
+                v-model="form.vertify_code"
+                placeholder="验证码"
+                :prefix-icon="Key"
+              >
+                <template #append>
+                  <div class="login-code" @click="refreshCode()" title="看不清？点击切换">
+                    <VertifyCode :identifyCode="identifyCode"></VertifyCode>
+                  </div>
+                </template>
+              </el-input>
+            </el-form-item>
             <el-button
               size="default"
               class="home-login-form-btn"
@@ -52,11 +65,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import api from "@api/index.js";
 import { ElMessage } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
+import VertifyCode from "@cp/VertifyCode.vue";
+import { Key } from "@element-plus/icons-vue";
 
 let router = useRouter();
 let route = useRoute();
@@ -69,7 +84,19 @@ let isAppearLoginForm = ref(false);
 let form = ref({
   email: "",
   pswd: "",
+  vertify_code: "",
 });
+
+let identifyCodes = ref("ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz0123456789");
+let identifyCode = ref("");
+
+function validateCode(rule, value, callback) {
+  if (value.toLowerCase() !== identifyCode.value.toLowerCase()) {
+    callback(new Error("请输入正确的验证码！"));
+  } else {
+    callback();
+  }
+}
 
 let ruleFormRef = ref();
 
@@ -83,7 +110,24 @@ let rules = ref({
     { min: 6, message: "密码长度不能小于6位", trigger: "blur" },
     { max: 20, message: "密码长度不能大于20位", trigger: "blur" },
   ],
+  vertify_code: [
+    { required: true, message: "请输入验证码", trigger: "blur" },
+    { required: true, validator: validateCode, change: "blur" },
+  ],
 });
+
+// 验证码部分
+
+function randomNum(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+function refreshCode() {
+  identifyCode.value = "";
+  for (let i = 0; i < 4; i++) {
+    identifyCode.value += identifyCodes.value[randomNum(0, identifyCodes.value.length)];
+  }
+}
 
 function appearForm() {
   isAppearForm.value = true;
@@ -138,6 +182,10 @@ function forgetPswd() {}
 function signUp() {
   router.push("/register");
 }
+
+onMounted(() => {
+  refreshCode();
+});
 </script>
 
 <style lang="less" scoped>

@@ -138,7 +138,7 @@ let categoryResourceLoading = ref(false);
 let addCategoryLoading = ref(false);
 let isLoadMore = ref(false);
 let offset = ref(0);
-let size = ref(1);
+let size = ref(10);
 let loadMoreLoading = ref(false);
 let isShowLoadMore = ref(false);
 
