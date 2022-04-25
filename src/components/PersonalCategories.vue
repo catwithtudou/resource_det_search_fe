@@ -190,7 +190,7 @@ function categoryCheck(category) {
         };
       }
       isShowLoadMore.value = true;
-      if (res.data.data.length < size.value) {
+      if (res.data.data.docs.length < size.value) {
         isLoadMore.value = false;
       } else {
         isLoadMore.value = true;
@@ -276,7 +276,7 @@ function loadMore(categoryId) {
           docId: res.data.data.docs[i].doc_id,
         };
       }
-      if (res.data.data.length < size.value) {
+      if (res.data.data.docs.length < size.value) {
         isLoadMore.value = false;
       } else {
         isLoadMore.value = true;

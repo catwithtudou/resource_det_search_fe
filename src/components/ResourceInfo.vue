@@ -182,6 +182,7 @@ let asideLoading = ref(false);
 let user = ref({
   avatar: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
   username: "用户名",
+  uid: 0,
   dmNum: {
     category: 0,
     tag: 0,
@@ -190,7 +191,12 @@ let user = ref({
 });
 
 function otherPersonal() {
-  // TODO:功能：跳转他人主页(目前暂时跳转到个人主页)
+  router.push({
+    name: "otherPersonal",
+    query: {
+      uid: user.value.uid,
+    },
+  });
 }
 
 // main 部分
@@ -271,6 +277,7 @@ onMounted(() => {
         content: res.data.data.content,
         downloadLink: res.data.data.dir,
       };
+      user.value.uid = res.data.data.uid;
 
       api.user
         .userInfo({

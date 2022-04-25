@@ -37,27 +37,9 @@
       </el-header>
       <el-container class="personal-base" v-model="userInfo" v-loading="userInfoLoading">
         <el-aside class="personal-base-avater">
-          <el-row justify="end" align="middle">
+          <el-row justify="center" align="middle">
             <el-col>
               <el-image :src="userInfo.avatarUrl" fit="fill" lazy />
-            </el-col>
-            <el-divider />
-            <el-col>
-              <div class="personal-base-avater-info">
-                <el-button type="text" :icon="Edit" @click="editIntro()"
-                  >编辑个人信息</el-button
-                >
-                <el-upload
-                  :action="uploadAvatar.action"
-                  :name="uploadAvatar.name"
-                  :headers="uploadAvatar.header"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                  :before-upload="beforeAvatarUpload"
-                >
-                  <el-button type="text" :icon="Upload">上传头像</el-button>
-                </el-upload>
-              </div>
             </el-col>
           </el-row>
         </el-aside>
@@ -89,22 +71,22 @@
           <el-menu
             class="personal-resource-type-menu"
             :default-active="activeMenu"
+            @select="handleSelectMenu"
             unique-opened
-            router
           >
-            <el-menu-item index="resource" route="/personal/resource">
+            <el-menu-item index="resource">
               <el-icon>
                 <document />
               </el-icon>
               <span>已上传资源</span>
             </el-menu-item>
-            <el-menu-item index="tags" route="/personal/tags">
+            <el-menu-item index="tags">
               <el-icon>
                 <collection-tag />
               </el-icon>
               <span>标签</span>
             </el-menu-item>
-            <el-menu-item index="categories" route="/personal/categories">
+            <el-menu-item index="categories">
               <el-icon>
                 <folder />
               </el-icon>
@@ -154,13 +136,7 @@ let userInfo = ref({
   intro: "",
 });
 let userInfoLoading = ref(false);
-let uploadAvatar = ref({
-  action: "http://localhost:3000/api/user/avatar",
-  name: "avatar",
-  header: {
-    Authorization: "Bearer " + userToken.value,
-  },
-});
+let otherPersonalUid = ref(route.query.uid);
 
 let topName = computed(() => store.state.home.name);
 
@@ -184,57 +160,30 @@ function uploadResource() {
   });
 }
 
-// 编辑个人资料部分
-function editIntro() {
-  ElMessageBox.prompt("请输入想要修改的简介（限制100字以内）", "编辑信息", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-  })
-    .then(({ value }) => {
-      if (value.length > 100) {
-        ElMessage.error("简介不能超过100字");
-        return;
-      }
-      api.user
-        .userInfoUpdate({ intro: value })
-        .then((res) => {
-          if (res.data.code != 0) {
-            ElMessage.error("服务器异常，请稍后重试~");
-            return;
-          }
-          userInfo.value.intro = value;
-          ElMessage({
-            type: "success",
-            message: `修改成功~`,
-          });
-        })
-        .catch((err) => {
-          ElMessage.error("网络错误，请检查网络连接");
-          return;
-        });
-    })
-    .catch(() => {});
-}
-
-// 上传头像部分
-function handleAvatarSuccess(response, uploadFile, file) {
-  if (response.code !== 0) {
-    ElMessage.error("上传头像失败，请稍后重试~");
-    return;
+function handleSelectMenu(index, indexPath, item) {
+  activeMenu.value = index;
+  if (index === "tags") {
+    router.push({
+      name: "tags",
+      query: {
+        uid: otherPersonalUid.value,
+      },
+    });
+  } else if (index === "resource") {
+    router.push({
+      name: "resource",
+      query: {
+        uid: otherPersonalUid.value,
+      },
+    });
+  } else if (index === "categories") {
+    router.push({
+      name: "categories",
+      query: {
+        uid: otherPersonalUid.value,
+      },
+    });
   }
-  userInfo.value.avatarUrl = response.data.avatar;
-  ElMessage.success("上传头像成功~");
-}
-
-function beforeAvatarUpload(rawFile) {
-  if (rawFile.type !== "image/jpeg" && rawFile.type !== "image/png") {
-    ElMessage.error("头像格式异常，请重新上传~");
-    return false;
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error("头像大小不能超过2MB，请重新上传~");
-    return false;
-  }
-  return true;
 }
 
 // 子路由部分
@@ -247,11 +196,11 @@ watch(
 
 function updateActiveMenu(path) {
   activeMenu.value = "";
-  if (path === "/personal/tags") {
+  if (path === "/other/personal/tags") {
     activeMenu.value = "tags";
-  } else if (path === "/personal/resource") {
+  } else if (path === "/other/personal/resource") {
     activeMenu.value = "resource";
-  } else if (path === "/personal/categories") {
+  } else if (path === "/other/personal/categories") {
     activeMenu.value = "categories";
   }
 }
@@ -262,7 +211,9 @@ onMounted(() => {
   updateActiveMenu(route.path);
   userInfoLoading.value = true;
   api.user
-    .userInfo()
+    .userInfo({
+      uid: Number(otherPersonalUid.value),
+    })
     .then((res) => {
       userInfoLoading.value = false;
       if (res.data.code != 0) {
@@ -333,12 +284,6 @@ onMounted(() => {
     .el-image {
       border-radius: 100%;
       width: 10vw;
-    }
-
-    .personal-base-avater-info {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
     }
   }
 

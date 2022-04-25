@@ -11,6 +11,10 @@ import resourceHome from "@views/resourceHome.vue";
 import resourceSearch from "@views/resourceSearch.vue";
 import resourceHomePart from "@views/resourceHomePart.vue";
 import resourceSearchPart from "@views/resourceSearchPart.vue";
+import otherPersonal from "@views/otherPersonal.vue";
+import otherPersonalResource from "@views/otherPersonalResource.vue";
+import otherPersonalTags from "@views/otherPersonalTags.vue";
+import otherPersonalCategories from "@views/otherPersonalCategories.vue";
 
 import store from "@/store";
 
@@ -74,6 +78,28 @@ const routes = [
         path: "part/:partId",
         name: "resourceSearchPart",
         component: resourceSearchPart,
+      },
+    ],
+  },
+  {
+    path: "/other/personal",
+    name: "otherPersonal",
+    component: otherPersonal,
+    children: [
+      {
+        path: "resource",
+        name:"resource",
+        component: otherPersonalResource,
+      },
+      {
+        path: "tags",
+        name: "tags",
+        component: otherPersonalTags,
+      },
+      {
+        path: "categories",
+        name: "categories",
+        component: otherPersonalCategories,
       },
     ],
   },
