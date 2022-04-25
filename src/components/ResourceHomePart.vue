@@ -135,8 +135,6 @@ function sortByMenuActive(sortBy) {
   }
 }
 
-// TODO:补充排序选项
-
 function getData(newValue, sortBy) {
   resourceLoading.value = true;
   isLoadMore.value = false;

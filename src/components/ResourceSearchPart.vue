@@ -63,30 +63,39 @@
       </el-row>
     </el-main>
     <el-aside class="resource-part-aside">
-      <el-menu class="aside-menu" v-if="!nothing">
-        <el-menu-item index="1">
+      <el-menu
+        class="aside-menu"
+        v-if="!nothing"
+        :default-active="sortByMenu"
+        @select="handleSelectMenu"
+      >
+        <el-menu-item index="_score">
+          <el-icon><magic-stick /></el-icon>
+          <span>匹配最多</span>
+        </el-menu-item>
+        <el-menu-item index="upload_date">
+          <el-icon>
+            <timer />
+          </el-icon>
+          <span>按最新时间</span>
+        </el-menu-item>
+        <el-menu-item index="like_num">
           <el-icon>
             <star-filled />
           </el-icon>
           <span>点赞最多</span>
         </el-menu-item>
-        <el-menu-item index="2">
+        <el-menu-item index="scan_num">
           <el-icon>
             <reading />
           </el-icon>
           <span>浏览最多</span>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="download_num">
           <el-icon>
             <download />
           </el-icon>
           <span>下载最多</span>
-        </el-menu-item>
-        <el-menu-item index="4">
-          <el-icon>
-            <timer />
-          </el-icon>
-          <span>按最新时间</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -97,7 +106,13 @@
 import { ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
-import { StarFilled, Reading, Download, Timer } from "@element-plus/icons-vue";
+import {
+  StarFilled,
+  Reading,
+  Download,
+  Timer,
+  MagicStick,
+} from "@element-plus/icons-vue";
 import api from "@api/index.js";
 import { ElMessage } from "element-plus";
 
@@ -110,8 +125,8 @@ let resources = ref([]);
 let searchKey = ref();
 let nothing = ref();
 let searchPart = ref(["all", "1", "2", "3", "4", "5", "6"]);
+let sortByMenu = ref();
 
-// TODO:补充搜索结果排序部分
 // TODO:进行分页处理
 
 function getData(newValue) {
@@ -139,6 +154,7 @@ function getData(newValue) {
     .searchAll({
       detail: searchKey.value,
       part_id: Number(partId),
+      sort_by: sortByMenu.value,
     })
     .then((res) => {
       resourceLoading.value = false;
@@ -186,9 +202,16 @@ function getData(newValue) {
   return;
 }
 
+function handleSelectMenu(index, indexPath, item) {
+  resources.value = [];
+  sortByMenu.value = index;
+  getData(route.params.partId);
+}
+
 watch(
   () => route.params.partId,
   (newValue) => {
+    sortByMenu.value = "_score";
     getData(newValue);
   }
 );
@@ -197,11 +220,13 @@ watch(
   () => route.query.search,
   (newValue) => {
     searchKey.value = newValue;
+    sortByMenu.value = "_score";
     getData(route.params.partId);
   }
 );
 
 onMounted(() => {
+  sortByMenu.value = "_score";
   searchKey.value = route.query.search;
   getData(route.params.partId);
 });
