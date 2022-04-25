@@ -52,6 +52,10 @@
             <el-divider />
             <el-col>
               <div class="aside-dimension">
+                <div class="dimension-all">
+                  <p><span>已上传</span></p>
+                  <p>{{ user.dmNum.all }}</p>
+                </div>
                 <div class="dimension-category">
                   <p><span>分类</span></p>
                   <p>{{ user.dmNum.category }}</p>
@@ -181,16 +185,13 @@ let user = ref({
   dmNum: {
     category: 0,
     tag: 0,
+    all: 0,
   },
 });
 
-// TODO:获取用户所有上传数字进行展示
-
 function otherPersonal() {
-  // TODO:跳转他人主页(目前暂时跳转到个人主页)
+  // TODO:功能：跳转他人主页(目前暂时跳转到个人主页)
 }
-
-
 
 // main 部分
 let mainLoading = ref(false);
@@ -289,27 +290,44 @@ onMounted(() => {
           api.dimension
             .getUserDimension({ uid: res.data.data.uid })
             .then((dmResp) => {
-              asideLoading.value = false;
               if (dmResp.data.code != 0) {
                 ElMessage.error("服务器异常，请稍后重试~");
                 return;
               }
-              user.value.dmNum = {
-                category: dmResp.data.data.category.length,
-                tag: dmResp.data.data.tag.length,
-              };
+
+              api.document
+                .getUserDocCount({ uid: res.data.data.uid })
+                .then((countResp) => {
+                  asideLoading.value = false;
+                  if (countResp.data.code != 0) {
+                    ElMessage.error("服务器异常，请稍后重试~");
+                    return;
+                  }
+
+                  user.value.dmNum = {
+                    category: dmResp.data.data.category.length,
+                    tag: dmResp.data.data.tag.length,
+                    all: countResp.data.data.count,
+                  };
+                })
+                .catch((countErr) => {
+                  mainLoading.value = false;
+                  asideLoading.value = false;
+                  ElMessage.error("网络错误，请检查网络连接~");
+                  return;
+                });
             })
             .catch((dmErr) => {
               mainLoading.value = false;
               asideLoading.value = false;
-              ElMessage.error("网络错误，请检查网络连接啊");
+              ElMessage.error("网络错误，请检查网络连接~");
               return;
             });
         })
         .catch((userErr) => {
           mainLoading.value = false;
           asideLoading.value = false;
-          ElMessage.error("网络错误，请检查网络连接啊");
+          ElMessage.error("网络错误，请检查网络连接~");
           return;
         });
       return;
@@ -317,7 +335,7 @@ onMounted(() => {
     .catch((err) => {
       mainLoading.value = false;
       asideLoading.value = false;
-      ElMessage.error("网络错误，请检查网络连接");
+      ElMessage.error("网络错误，请检查网络连接~");
       return;
     });
 });

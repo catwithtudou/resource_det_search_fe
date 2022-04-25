@@ -99,7 +99,7 @@ let isShowLoadMore = ref(false);
 let sortByMenu = ref("");
 let sortByReq = ref("");
 
-// TODO:后续补充动态判断维度ID，目前写死该部分
+// TODO:优化：后续补充动态判断维度ID，目前写死该部分
 function checkPartId(partId) {
   if (!partId) {
     return false;

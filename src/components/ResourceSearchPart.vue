@@ -127,7 +127,8 @@ let nothing = ref();
 let searchPart = ref(["all", "1", "2", "3", "4", "5", "6"]);
 let sortByMenu = ref();
 
-// TODO:进行分页处理
+// TODO:优化：进行分页处理
+// FIXME:子路由下跳转到资源详细页时query依然存在，导致撤退时先撤退query，再回到上一页面
 
 function getData(newValue) {
   resources.value = [];
